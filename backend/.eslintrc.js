@@ -22,6 +22,8 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    'prefer-destructuring': 'off',
+    'dot-notation': 'off',
     'class-methods-use-this': 'off',
     'import/extensions': [
       'error',
