@@ -21,7 +21,7 @@ export default class SessionController {
       userAlreadyExists.password,
     );
     if (passwordsMatch) {
-      const token = jwt.sign({ id: userAlreadyExists.id }, secret.secret);
+      const token = jwt.sign({ id: userAlreadyExists.id }, String(secret.secret));
       return response.json({
         token,
         type: 'Bearer',

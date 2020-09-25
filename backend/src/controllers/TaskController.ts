@@ -16,16 +16,15 @@ export default class TaskController {
       });
       return response.json({ task });
     } catch (error) {
-        console.log(error);
       return response.status(500).json({ error: 'Could not register task' });
     }
   }
 
   async index(request: Request, response: Response) {
-  	const {project_id = null} = request.headers;
+  	const {project_id} = request.headers;
       const userId = response.locals.userId;
       try {
-          const tasks = await connection('tasks').select('*').where({user_id: userId, project_id});
+          const tasks = await connection('tasks').select('*').where({user_id: userId, project_id: Number(project_id)});
           return response.json(tasks);
       } catch (error) {
       return response.status(500).json({ error: 'Could not get tasks' });
@@ -66,7 +65,6 @@ export default class TaskController {
       await connection('tasks').del().where({user_id, id});
       return response.json({success: "Deleted!"});
   } catch (error) {
-      console.log(error);
   return response.status(500).json({ error: 'Could not delete task' });
       
   }

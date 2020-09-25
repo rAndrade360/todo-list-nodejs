@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import connection from '../database/connection';
 
 export default class ProjectController {
+  
   async store(request: Request, response: Response) {
     const { name} = request.body;
     const userId = response.locals.userId;
@@ -62,12 +63,9 @@ export default class ProjectController {
     const userId = response.locals.userId;
 
     try{
-    const projects = await connection('projects')
-      .join('tasks', 'projects.id', '=', 'tasks.project_id')
-      .select('projects.id','projects.name', 'tasks.*').where('projects.id', id).where('projects.user_id', userId);
-    return response.json(projects);
+      const project = await connection('projects').where('id', id).where('user_id', userId).first();
+      return response.json(project);
     } catch(error) {
-        console.log(error);
         return response.status(500).json({error: 'Could not get projects'});
     }
 }
@@ -79,7 +77,6 @@ async delete(request: Request, response: Response) {
       await connection('projects').del().where({user_id, id});
       return response.json({success: "Deleted!"});
   } catch (error) {
-      console.log(error);
   return response.status(500).json({ error: 'Could not delete project' });
       
   }
