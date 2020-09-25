@@ -9,7 +9,7 @@ export default class SessionController {
     const { email, password } = request.body;
 
     const userAlreadyExists = await connection('users')
-      .select('id', 'password')
+      .select('id', 'password', 'name')
       .where({ email })
       .first();
 
@@ -25,7 +25,7 @@ export default class SessionController {
       return response.json({
         token,
         type: 'Bearer',
-        user_id: userAlreadyExists.id,
+        user: {id: userAlreadyExists.id, name: userAlreadyExists.name, email},
       });
     }
     return response.status(401).json({ error: 'Incorrect password' });

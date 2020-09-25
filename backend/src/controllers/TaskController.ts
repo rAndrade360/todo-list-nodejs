@@ -22,9 +22,10 @@ export default class TaskController {
   }
 
   async index(request: Request, response: Response) {
+  	const {project_id = null} = request.headers;
       const userId = response.locals.userId;
       try {
-          const tasks = await connection('tasks').select('*').where({user_id: userId});
+          const tasks = await connection('tasks').select('*').where({user_id: userId, project_id});
           return response.json(tasks);
       } catch (error) {
       return response.status(500).json({ error: 'Could not get tasks' });

@@ -18,7 +18,7 @@ export default class CompletTaskController {
 
     async getAll(request: Request, response: Response) {
         const userId = response.locals.userId;
-        const { project_id } = request.headers;
+        const { project_id = null } = request.headers;
         
         try {
           const completeds = await connection('tasks').select('*').where({completed: true, user_id: userId, project_id});
