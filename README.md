@@ -15,7 +15,10 @@ Projeto de TODO list criado em Nodejs e ReactJS
 ### Desenvolvimento ⌨
 
 Na pasta do backend do projeto, execute:
-`yarn dev`
+``
+yarn knex migrate:latest
+``
+``yarn dev``
 
 Na pasta do frontend do projeto, execute:
 `yarn start`
