@@ -7,6 +7,8 @@ Projeto de TODO list criado em Nodejs e ReactJS
 - [Nodejs](https://www.nodejs.org/)
 - [ReactJS](https://pt-br.reactjs.org/)
 - [KnexJs](knexjs.org/)
+- [Typescript](https://www.typescriptlang.org/)
+- [SQlite](https://www.sqlite.org/index.html)
 
 ## Como usar 🤔
 
