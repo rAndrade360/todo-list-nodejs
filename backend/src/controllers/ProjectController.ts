@@ -71,4 +71,17 @@ export default class ProjectController {
         return response.status(500).json({error: 'Could not get projects'});
     }
 }
+
+async delete(request: Request, response: Response) {
+    const {id} = request.params;
+    const user_id = response.locals.userId;
+  try {
+      await connection('projects').del().where({user_id, id});
+      return response.json({success: "Deleted!"});
+  } catch (error) {
+      console.log(error);
+  return response.status(500).json({ error: 'Could not delete project' });
+      
+  }
+}
 }
