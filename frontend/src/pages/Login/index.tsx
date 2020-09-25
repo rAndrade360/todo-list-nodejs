@@ -1,6 +1,7 @@
 import React, {useState, SyntheticEvent, FormEvent} from 'react';
 import { Container, FormContainer, Form, InputBlock } from './styles';
 import {useAuth} from '../../contexts/Auth';
+import { Link } from 'react-router-dom';
 
 
 const Login: React.FC = () => {
@@ -37,6 +38,8 @@ const Login: React.FC = () => {
                 
                 <button>Entrar</button>
             </Form>
+           <p> Não é cadastrado? <Link to="/register"> Cadastre-se.</Link></p>
+            
         </FormContainer>
     </Container>
   );

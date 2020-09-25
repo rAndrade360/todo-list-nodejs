@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
   Switch,
   Redirect
 } from "react-router-dom";
@@ -8,11 +7,11 @@ import Route from './Route';
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
-import General from "../pages/General";
+import Project from "../pages/Project";
 
 export default function Routes() {
   return (
-    <Router>
+   
         <Switch>
           <Route path="/" exact>
             <Redirect to="/login" />
@@ -20,8 +19,7 @@ export default function Routes() {
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login}/>
           <Route path="/dashboard" exact isPrivate component={Dashboard} />
-          <Route path="/dashboard/general" isPrivate component={General} />
+          <Route path="/dashboard/project/:id?" isPrivate component={Project} />
         </Switch>
-    </Router>
   );
 }

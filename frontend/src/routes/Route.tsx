@@ -1,21 +1,27 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useAuth } from '../contexts/Auth';
+import AuthLayout from '../pages/_layouts/authLayout';
+import DefaultLayout from '../pages/_layouts/defaultLayout';
 
 export default function RouteWrapper({component: Component, isPrivate, ...rest}: any) {
   const authContext = useAuth();
   
 
-//   const Layout = signed ? DefaultLayout : AuthLayout;
-if (!authContext?.signed && isPrivate) {
+  if (!authContext?.signed && isPrivate) {
     return <Redirect to="/login" />;
   }
-
+  
   if (authContext?.signed && !isPrivate) {
     return <Redirect to="/dashboard" />;
   }
+  const Layout = authContext?.signed ? AuthLayout : DefaultLayout ;
 
   return (
-    <Route render={(props) => (React.createElement(Component, props))} />
+    <Route {...rest} render={(props) => (
+      <Layout>
+         {React.createElement(Component, props)}
+      </Layout> 
+      )} />
   );
 }
