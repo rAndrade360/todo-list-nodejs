@@ -1,9 +1,17 @@
 import { Request, Response } from 'express';
 import connection from '../database/connection';
+import TaskValidator from '../validators/taskValidator';
+
+const taskValidator = new TaskValidator();
+
 
 export default class TaskController {
   async store(request: Request, response: Response) {
     const { name, is_important, completed, schedule, project_id } = request.body;
+
+    if(!await taskValidator.store(request.body))
+      return response.status(400).json({error: "Icorrect values"})
+
     try {
       const userId = response.locals.userId;
       const task = await connection('tasks').insert({
@@ -48,7 +56,10 @@ export default class TaskController {
     const {id} = request.params;
     const userId = response.locals.userId;
     const {name} = request.body;
-    
+
+    if(!await taskValidator.update({name}))
+      return response.status(400).json({error: "Icorrect values"})
+
     try {
       await connection('tasks').update({name}).where({id, user_id: userId});
       return response.json({success: "Updated successfully"});

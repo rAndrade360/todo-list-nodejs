@@ -1,11 +1,20 @@
 import { Request, Response } from 'express';
+import ProjectValidator from '../validators/projectValidator';
+
 import connection from '../database/connection';
+
+const projectValidator = new ProjectValidator();
 
 export default class ProjectController {
   
   async store(request: Request, response: Response) {
-    const { name} = request.body;
+    const {name} = request.body;
     const userId = response.locals.userId;
+
+    if(!await projectValidator.store(request.body))
+      return response.status(400).json({error: "Icorrect values"})
+
+
     try {
       const projectAlreadyExists = await connection('projects')
         .select('id')
@@ -48,7 +57,11 @@ export default class ProjectController {
     const {id} = request.params;
     const userId = response.locals.userId;
     const {name} = request.body;
-    
+
+
+    if(!await projectValidator.update(request.body))
+      return response.status(400).json({error: "Icorrect values"});
+
     try {
       await connection('projects').update({name}).where({id, user_id: userId});
       return response.json({success: "Updated successfully"});

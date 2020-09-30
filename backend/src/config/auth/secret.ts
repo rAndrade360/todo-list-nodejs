@@ -1,3 +1,3 @@
 export default {
-  secret: 'merendadamanha',
+  secret: process.env.SECRET,
 };

@@ -1,12 +1,17 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import SessionValidator from '../validators/sessionValidator';
 import bcrypt from 'bcrypt';
 import connection from '../database/connection';
 import secret from '../config/auth/secret';
 
+const sessionValidator = new SessionValidator();
+
 export default class SessionController {
   async login(request: Request, response: Response) {
     const { email, password } = request.body;
+
+    if(!await sessionValidator.store(request.body)) return response.status(400).json({error: "Icorrect values"})
 
     const userAlreadyExists = await connection('users')
       .select('id', 'password', 'name')
