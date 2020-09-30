@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-
+import TodoInterface from '../../interfaces/TodoInterface';
 import { Container, DeleteButton } from './styles';
 
 interface ITodoItem {
-    todo: any;
+    todo: TodoInterface;
     onDeleteTodo: (todo: any) => Promise<void>;
     onCompleteTodo: (todo: any) => Promise<void>;
     onImportant: (todo: any) => Promise<void>;
@@ -20,11 +20,12 @@ const TodoItem: React.FC<ITodoItem> = ({todo, onCompleteTodo, onImportant, onDel
             onEditTodo(newValue, todo);
         }
     }
+
   return (
     <Container key={todo?.id} onDoubleClick={()=>{setEditing(true)}}>
          {editing ? (
              <input type="text" value={newValue} onChange={(e) => {setNewValue(e.target.value)}} onKeyDown={handleKeyDown} />
-         ): (
+         ) : (
              <>
             <a>{newValue}</a> 
             <button onClick={() => onImportant(todo)}>{todo.is_important? 'importante': 'não importante'}</button> 
@@ -33,8 +34,6 @@ const TodoItem: React.FC<ITodoItem> = ({todo, onCompleteTodo, onImportant, onDel
             </>
          )}
          </Container>
-    
-     
     );
 }
 

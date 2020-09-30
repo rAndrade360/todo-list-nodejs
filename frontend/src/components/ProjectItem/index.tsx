@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-
-import { Container } from './styles';
 import { Link } from 'react-router-dom';
+import ProjectInterface from '../../interfaces/ProjectInterface';
+import { Container } from './styles';
 
 interface IProjectItem {
-    project: any;
+    project: ProjectInterface;
     onDeleteProject: (project: any) => Promise<void>;
     onEditProject: (name:string, project: any) => Promise<void>;
 }
@@ -22,13 +22,19 @@ const ProjectItem: React.FC<IProjectItem> = ({project, onDeleteProject, onEditPr
 
     <Container key={project?.id} onDoubleClick={()=>{setEditing(true)}}>
          {editing ? (
-             <input type="text" value={newValue} onChange={(e) => {setNewValue(e.target.value)}} onKeyDown={handleKeyDown} />
-         ): (
-             <>           
-                <p> <Link to={`/dashboard/project/${project.id}`}>{newValue}</Link> </p>
-                <button onClick={()=>onDeleteProject(project)}>Deletar</button>
-                  </>
-            
+            <input
+               type="text"
+               value={newValue}
+               onChange={(e) => {
+                   setNewValue(e.target.value)
+                }}
+                onKeyDown={handleKeyDown}
+            />
+         ) : (
+            <>           
+              <p> <Link to={`/dashboard/project/${project.id}`}>{newValue}</Link> </p>
+              <button onClick={()=>onDeleteProject(project)}>Deletar</button>
+            </>
          )}
          </Container>
     

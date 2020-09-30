@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
-
 import { Container, MainContainer, InputContainer, ListContainer } from './styles';
 import api from '../../services/api';
 import ProjectItem from '../../components/ProjectItem';
+import ProjectInterface from '../../interfaces/ProjectInterface';
 
 const Dashboard: React.FC = () => {
-    const [projects, setProjects] = useState<Array<any>>([]);
+    const [projects, setProjects] = useState<Array<ProjectInterface>>([]);
     const [newProject, setNewProject] = useState('');
+
     useEffect(() => {
         async function getAllProjects() {
             const response = await api.get('/projects');
@@ -14,10 +15,17 @@ const Dashboard: React.FC = () => {
         }
         getAllProjects();
     }, []);
+
     const addProject = async () => {
         try {
             const response = await api.post('/projects', {name: newProject});
-            setProjects([...projects, {name: newProject, id: response.data.project[0]}]);
+
+            const toAddProject: ProjectInterface = {
+                name: newProject, 
+                id: response.data.project[0]
+            };
+
+            setProjects([...projects, toAddProject]);
             setNewProject('');
         } catch (error) {
             alert("Não foi possível realizar a operação");
@@ -25,7 +33,7 @@ const Dashboard: React.FC = () => {
         }
     }
 
-    const deleteProject = async (project: any) => {
+    const deleteProject = async (project: ProjectInterface) => {
         try {
             await api.delete(`/projects/${project.id}/delete`);
             setProjects(projects.filter(savedProject => savedProject.id !== project.id));
@@ -35,23 +43,21 @@ const Dashboard: React.FC = () => {
         }
     }
 
-    const onEditProject = async(name: string, project: any) => {
+    const onEditProject = async(name: string, project: ProjectInterface) => {
         try {
             await api.put(`/projects/${project.id}/update`, {name});
 
-            setProjects(projects.map(savedProject => {
-                if(savedProject === project.id) {
-                    savedProject.name = name;
-                }
-                return savedProject;
-            }));
-            
-            
+            const projectsState = projects;
+            projectsState.find((savedProject: ProjectInterface) => savedProject.id === project.id )!.name = name;
+
+            setProjects(projectsState);
+                     
         } catch (error) {
           alert("Não foi possível realizar a operação");
           return;
         }
       }
+
   return (
     <Container>
         <MainContainer>
@@ -61,16 +67,14 @@ const Dashboard: React.FC = () => {
                 <button onClick={() => addProject()} >Adicionar</button>
             </InputContainer>
             <ListContainer>
-                {projects.map(project => (
+                {projects.map((project: ProjectInterface) => (
                   <ProjectItem
                     project={project}
                     onDeleteProject={deleteProject}
                     onEditProject={onEditProject} 
                 />
-            ))}
-                  
-            </ListContainer>
-            
+            ))}                  
+            </ListContainer>            
         </MainContainer>
     </Container>
   );
