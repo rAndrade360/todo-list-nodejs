@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-export default class TaskValidator {
+export default class ProjectValidator {
     async store(schema: object) {
         const validatorSchema = Yup.object().shape({
             name: Yup.string().required(),

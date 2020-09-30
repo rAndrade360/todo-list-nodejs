@@ -5,10 +5,10 @@ import TodoItem from '../../components/TodoItem';
 
 import { Container, ListContainer, MainContainer, InputContainer } from './styles';
 import { useParams } from 'react-router-dom';
+import TodoInterface from '../../interfaces/TodoInterface';
 
 const Project: React.FC = () => {
-    const [todos, setTodos] = useState<Array<any>>([]);
-    const [completed, setCompleted] = useState<Array<any>>([]);
+    const [todos, setTodos] = useState<Array<TodoInterface>>([]);
     const [project, setProject] = useState({name:'', project_id:null});
     const [newTodo, setNewTodo] = useState('');
     const { id } = useParams();
@@ -17,11 +17,8 @@ const Project: React.FC = () => {
         async function getAllTodos() {
             const response = await api.get('/tasks', {headers: {authorization: authContext?.token, project_id: id}});
             const responseProject = await api.get(`/projects/show/${id}`);
-            const completed = response.data.filter((todo: any) => todo.completed === 1);
-            const notCompleted = response.data.filter((todo: any) => todo.completed !== 1);
             responseProject.data.name && setProject({name: responseProject.data.name, project_id: responseProject.data.id});
-            setTodos(notCompleted);
-            setCompleted(completed);
+            setTodos(response.data);
         }
         getAllTodos();
     }, [authContext, id]);
@@ -29,8 +26,16 @@ const Project: React.FC = () => {
     const onAddTodo = async () => {
         try {
             const response = await api.post('/tasks', {name: newTodo, project_id: project.project_id});
+
+            const todoToAdd: TodoInterface = {
+              name: newTodo, 
+              id: response.data.task[0], 
+              completed: false, 
+              is_important: false,
+              project_id: project.project_id
+            };
             
-            setTodos([...todos, {name: newTodo, id: response.data.task[0], completed: false}]);
+            setTodos([...todos, todoToAdd]);
             setNewTodo('');
         } catch (error) {
             alert("Não foi possível realizar a operação");
@@ -39,26 +44,16 @@ const Project: React.FC = () => {
         
     }
 
-    const onImportant = async (todo: any) => {
+    const onImportant = async (todo: TodoInterface) => {
         try {
-            await api.post(`/tasks/importants/${todo.id}`, {is_important: !todo.is_important});
+          await api.post(`/tasks/importants/${todo.id}`, {is_important: !todo.is_important});
            
-            todo.is_important = !todo.is_important;
-            if(todo.completed){
-              setCompleted(completed.map((savedTodo: any) => {
-                  if(todo.id === savedTodo.id){
-                      savedTodo.is_important = todo.is_important;
-                  }
-                  return savedTodo;
-              }))
-            }else{
-                setTodos(todos.map((savedTodo: any) => {
-                    if(todo.id === savedTodo.id){
-                        savedTodo.is_important = todo.is_important;
-                    }
-                    return savedTodo;
-                }))
-            }
+          todo.is_important = !todo.is_important;
+
+          const todoState = todos;
+          todoState.find(todoImportant => todoImportant.id === todo.id)!.is_important = todo.is_important;
+
+          setTodos(todoState);
             
         } catch (error) {
             alert("Não foi possível realizar a operação");
@@ -66,18 +61,16 @@ const Project: React.FC = () => {
         }
     }
 
-    const onCompleteTodo = async(todo: any) => {
+    const onCompleteTodo = async(todo: TodoInterface) => {
       try {
           await api.post(`/tasks/completed/${todo.id}`, {completed: !todo.completed});
          
           todo.completed = !todo.completed;
-          if(todo.completed === true || todo.completed === 1){
-            setCompleted([...completed, todo]);
-          setTodos(todos.filter(savedTodo => savedTodo.id !== todo.id));
-          }else{
-            setTodos([...todos, todo]);
-            setCompleted(completed.filter(savedTodo => savedTodo.id !== todo.id));
-          }
+
+          const todoState = todos;
+          todoState.find(todoComplete => todoComplete.id === todo.id)!.completed = todo.completed;
+
+          setTodos(todoState);
           
       } catch (error) {
         alert("Não foi possível realizar a operação");
@@ -87,13 +80,8 @@ const Project: React.FC = () => {
     const onDeleteTodo = async(todo: any) => {
         try {
             await api.delete(`/tasks/${todo.id}/delete`);
-
-            todo.completed = !todo.completed;
-            if(todo.completed === true || todo.completed === 1){
-              setCompleted(completed.filter(savedTodo => savedTodo.id !== todo.id));
-            }else{
-                setTodos(todos.filter(savedTodo => savedTodo.id !== todo.id));
-            }
+            
+            setTodos(todos.filter(savedTodo => savedTodo.id !== todo.id));
             
         } catch (error) {
             alert("Não foi possível realizar a operação");
@@ -130,7 +118,8 @@ const Project: React.FC = () => {
             </InputContainer>
 
             <ListContainer>
-                {todos.map((todo: any) =>( 
+                {todos.map((todo: TodoInterface) =>(
+                  todo.completed ? null : (
                   <TodoItem 
                     todo={todo}
                     onDeleteTodo={onDeleteTodo}
@@ -138,11 +127,14 @@ const Project: React.FC = () => {
                     onImportant={onImportant}
                     onEditTodo={onEditTodo}
                   />
+                  )
                 ))}
             </ListContainer>
             <ListContainer>
             <p>Concluído</p>
-                {completed.map((todo:any) => <li onClick={() => onCompleteTodo(todo)} style={{cursor: "pointer"}} key={todo?.id}><p >{todo?.name}</p></li>)}
+                {todos.map((todo:TodoInterface) => (todo.completed ? (
+                <li onClick={() => onCompleteTodo(todo)} style={{cursor: "pointer"}} key={todo?.id}><p >{todo?.name}</p></li>
+                ):null))}
             </ListContainer>
         </MainContainer>
     </Container>
