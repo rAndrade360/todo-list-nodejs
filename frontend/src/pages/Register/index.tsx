@@ -4,6 +4,7 @@ import { useHistory, Link } from 'react-router-dom';
 import { Container, FormContainer, Form, InputBlock } from './styles';
 import Input from '../../components/Input';
 import { FormHandles, SubmitHandler } from '@unform/core';
+import * as Yup from 'yup';
 
 interface FormData {
     email: string;
@@ -16,11 +17,29 @@ const Register: React.FC = () => {
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         try {
+
+            formRef.current?.setErrors({});
+            
+            const schema = Yup.object().shape({
+                name: Yup.string().required(),
+                email: Yup.string().email().required(),
+                password: Yup.string().min(6).required(),
+            });
+
+            await schema.validate(data, {abortEarly: false});
+
             await api.post('/users', data);
             alert('Cadastrado com sucesso!');
             history.push('/login');
         } catch (error) {
-            alert('Não foi possivel cadastrar, tente novamente!');
+            const validationErrors: {[key: string]: string} = {};
+
+            if(error instanceof Yup.ValidationError) {
+                error.inner.forEach(error => {
+                    validationErrors[error.path] = error.message;
+                })
+            }
+            formRef.current?.setErrors(validationErrors);
         }
     }
   return (
