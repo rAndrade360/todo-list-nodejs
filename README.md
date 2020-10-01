@@ -9,6 +9,8 @@ Projeto de TODO list criado em Nodejs e ReactJS
 - [KnexJs](knexjs.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [SQlite](https://www.sqlite.org/index.html)
+- [Unform](https://unform.dev/)
+- [Yup](https://github.com/jquense/yup)
 
 ## Como usar 🤔
 
