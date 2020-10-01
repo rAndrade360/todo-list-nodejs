@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Form as Unform } from '@unform/web';
 
 export const Container = styled.div`
   width: 100vw;
@@ -21,12 +22,11 @@ export const FormContainer = styled.div`
   align-items: center;
 `;
 
-export const Form = styled.form`
+export const Form = styled(Unform)`
   display: flex;
   margin-top: 10px;
   width: 100%;
   flex-direction: column;
-
   justify-content: center;
   align-items: center;
 
@@ -49,7 +49,6 @@ export const InputBlock = styled.div`
   input {
       width: 100%;
       height: 38px;
-
       border: 1px solid #4a4a4a
       border-radius: 7px;
   }
